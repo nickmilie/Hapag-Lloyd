@@ -43,6 +43,7 @@ public class UserRepositoryTest {
         user.setUsername("test");
         user.setAge(19);
         user.setGender(Gender.MALE.name());
+        user.setActive(true);
 
         userRepository.save(user);
 

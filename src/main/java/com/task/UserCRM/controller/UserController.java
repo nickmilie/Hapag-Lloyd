@@ -4,11 +4,12 @@ import com.task.UserCRM.Enum.Gender;
 import com.task.UserCRM.entity.User;
 import com.task.UserCRM.model.UserModel;
 import com.task.UserCRM.repository.UserRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
+import org.springframework.mail.SimpleMailMessage;
+import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalDateTime;
 import java.util.regex.Matcher;
@@ -19,14 +20,15 @@ public class UserController {
 
     UserRepository userRepository;
 
+    @Autowired
+    private JavaMailSender mailSender;
+
     public UserController(UserRepository userRepository) {
         this.userRepository = userRepository;
     }
 
     @PostMapping("/user/create")
     public ResponseEntity<String> createUser(@ModelAttribute UserModel userModel){
-
-//        TODO email confirmation
 
         if(userRepository.findByUsername(userModel.getUsername()).isPresent()) {
             return new ResponseEntity<>("Username is already taken",
@@ -50,6 +52,10 @@ public class UserController {
 
 
         userRepository.save(user);
+
+        User confirmationUser = userRepository.findByUsername(userModel.getUsername()).orElse(new User());
+
+        senConfirmationEmail(confirmationUser.getId());
 
         return ResponseEntity.ok("User created");
     }
@@ -98,6 +104,17 @@ public class UserController {
         return ResponseEntity.ok("User has been deleted");
     }
 
+    @GetMapping("/registrationConfirm")
+    public ResponseEntity<String> confirm(@RequestParam("id") String id) {
+
+        User user = userRepository.findById(Integer.valueOf(id)).orElse(new User());
+
+        user.setActive(true);
+
+        userRepository.save(user);
+
+        return ResponseEntity.ok("User activated");
+    }
 
     private boolean verifyUsername(String username){
         Pattern pattern = Pattern.compile("[^A-Za-z0-9]");
@@ -106,6 +123,19 @@ public class UserController {
     }
     private boolean verifyAge(int age){
         return age < 0 || 120 < age;
+    }
+
+    private void senConfirmationEmail(int id){
+
+        String recipientAddress = "USERNAME@gmail.com";
+        String subject = "Registration confirmation";
+
+        SimpleMailMessage email = new SimpleMailMessage();
+
+        email.setTo(recipientAddress);
+        email.setSubject(subject);
+        email.setText("http://localhost:8080/registrationConfirm?=" + id);
+        mailSender.send(email);
     }
 
 }

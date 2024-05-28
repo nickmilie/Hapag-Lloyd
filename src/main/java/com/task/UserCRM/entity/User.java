@@ -25,7 +25,11 @@ public class User {
     @Column(name = "creationTimestamp")
     private LocalDateTime creationTimestamp;
 
+    @Column(name = "active")
+    private boolean active;
+
     public User() {
+        this.active = false;
     }
 
     public int getId() {
@@ -66,5 +70,13 @@ public class User {
 
     public void setCreationTimestamp(LocalDateTime creationTimestamp) {
         this.creationTimestamp = creationTimestamp;
+    }
+
+    public boolean isActive() {
+        return active;
+    }
+
+    public void setActive(boolean active) {
+        this.active = active;
     }
 }
