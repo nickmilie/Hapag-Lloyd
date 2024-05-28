@@ -24,9 +24,7 @@ public class UserController {
     }
 
     @PostMapping("/user/create")
-    public ResponseEntity<String> createUser(@ModelAttribute UserModel userModel){
-
-//        TODO email confirmation
+    public ResponseEntity<String> createUser(@RequestBody UserModel userModel){
 
         if(userRepository.findByUsername(userModel.getUsername()).isPresent()) {
             return new ResponseEntity<>("Username is already taken",
