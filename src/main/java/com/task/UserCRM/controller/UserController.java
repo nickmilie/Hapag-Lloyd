@@ -14,7 +14,7 @@ import java.time.LocalDateTime;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-@Controller
+@RestController
 public class UserController {
 
     UserRepository userRepository;
