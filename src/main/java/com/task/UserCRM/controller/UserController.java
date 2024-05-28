@@ -68,7 +68,7 @@ public class UserController {
 
 
     @PutMapping("/user/{id}")
-    public ResponseEntity<User> updateUser(@PathVariable String id, @ModelAttribute UserModel userModel){
+    public ResponseEntity<User> updateUser(@PathVariable String id, @RequestBody UserModel userModel){
 
         User user = new User();
 
