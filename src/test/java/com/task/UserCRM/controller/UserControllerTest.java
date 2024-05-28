@@ -6,6 +6,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.MediaType;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.web.client.RestTemplate;
@@ -23,10 +24,6 @@ public class UserControllerTest {
 
     @Autowired
     MockMvc mockMvc;
-
-    @Autowired
-    RestTemplate restTemplate;
-
     @Autowired
     UserRepository userRepository;
 
@@ -48,6 +45,18 @@ public class UserControllerTest {
     void should_return_user_not_found_response() throws Exception {
         this.mockMvc.perform(get("/user/2")).andDo(print()).andExpect(status().isNotFound())
                 .andExpect(content().string(containsString("There is no such user")));
+    }
+
+    @Test
+    void should_create_user() throws Exception {
+        this.mockMvc.perform(post("/user/create")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"username\":\"TestUser\",\"gender\":\"MALE\",\"age\":19}"))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(content().string(containsString("User created")));
+
+
     }
 
 }
